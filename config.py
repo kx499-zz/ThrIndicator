@@ -20,6 +20,8 @@ SOURCES = {
     "SSL IPBL":
         {
             "frequency": "*",
+            "ttl": 90,
+            "direction": "both",
             "modules": {
                 "collect": {
                     "name": "collect.GetHttp",
@@ -45,6 +47,8 @@ SOURCES = {
     "alienvault":
         {
             "frequency": "0,4,8,12,16,20",
+            "ttl": 90,
+            "direction": "both",
             "modules": {
                 "collect": {
                     "name": "collect.GetHttp",

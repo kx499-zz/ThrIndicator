@@ -38,7 +38,7 @@ def _valid_json(fields, data_dict):
     return False
 
 
-def _add_indicators(results, source, enrich_it=False):
+def _add_indicators(results, source, ttl, direction, enrich_it=False):
     #need to add a fix for ttl and direction from feed config
     reasons = []
     inserted_indicators = []
@@ -55,7 +55,7 @@ def _add_indicators(results, source, enrich_it=False):
             val = i
             dt = indicators[i]['date']
             desc = indicators[i]['description']
-            ind = Indicator.query.filter(Indicator.source == source, Indicator.data_type == dt,
+            ind = Indicator.query.filter(Indicator.source == source, Indicator.data_type == data_type,
                                          Indicator.value == i).first()
             if ind:
                 ind.last_seen = dt
@@ -64,18 +64,19 @@ def _add_indicators(results, source, enrich_it=False):
                 try:
                     ind = Indicator(value=val,
                                     source=source,
-                                    ttl=90,
+                                    ttl=ttl,
                                     data_type=data_type,
-                                    direction='both',
+                                    direction=direction,
                                     details=desc)
-
-                    db.session.add(ind)
-                    db.session.flush()
-                    ind_id = ind.id
-                    inserted_indicators.append([ind_id, source, val])
                 except:
+                    print 'except in try'
                     reasons.append('Validation Failed')
                     failed_indicators.append([0, source, val])
+                    continue
+            db.session.add(ind)
+            db.session.flush()
+            ind_id = ind.id
+            inserted_indicators.append([ind_id, source, val])
 
     # commit
     try:

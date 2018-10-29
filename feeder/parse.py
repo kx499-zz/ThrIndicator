@@ -113,7 +113,6 @@ class ParseText:
                         desc_val.append(tmp)
                 log_date = matches.get('date')
                 if len(desc_val) > 0:
-                    print 'val: %s' % desc_val
                     desc = ';'.join(desc_val)
                 results.new_ind(data_type=data_type,
                                 indicator=ioc,

@@ -29,7 +29,7 @@ class Feed:
 
     def process_all(self, config_to_process=None):
         results = {}
-        fields = ['frequency', 'modules']
+        fields = ['frequency', 'modules', 'ttl', 'direction']
         date_hour = datetime.datetime.now().hour
         for name, config in self.configs.iteritems():
             if not _valid_json(fields, config):
@@ -41,7 +41,7 @@ class Feed:
             app.logger.info('Processing Feed: %s' % name)
             modules = config.get('modules')
             freq = config.get('frequency').split(',')
-            if not ('*' in freq  or date_hour in freq):
+            if not ('*' in freq  or str(date_hour) in freq):
                 continue
 
             if 'parse' in modules.keys() and 'collect' in modules.keys():
@@ -68,7 +68,7 @@ class Feed:
                 parser = parse_cls(parse_config, data)
                 logs = parser.run()
                 #results[config.get('name', 'n/a')] = logs
-                results[name] = _add_indicators(logs, name)
+                results[name] = _add_indicators(logs, name, config.get('ttl'), config.get('direction'))
             elif 'custom' in modules.keys():
                 pass
             else:
