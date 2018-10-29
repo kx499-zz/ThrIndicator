@@ -1,5 +1,6 @@
 from app import db
 from app import app
+from config import TTL_VALUES, DATA_TYPES, DIRECTIONS, SOURCES
 from .models import Indicator
 from feeder.logentry import ResultsDict
 #from whois import whois
@@ -51,6 +52,12 @@ def _add_indicators(results, source, ttl, direction, enrich_it=False):
 
     for data_type in results.data_types.keys():
         indicators = results.data_types.get(data_type)
+        if not (ttl in TTL_VALUES and data_type in DATA_TYPES and direction in DIRECTIONS and source in SOURCES):
+            app.logger.warn('Bad ttl, data_type, direction, or source to _add_indicators')
+            reasons.append('Bad ttl, data_type, direction, or source to _add_indicators')
+            failed_indicators.extend([i for i in indicators.keys()])
+            continue
+
         for i in indicators.keys():
             val = i
             dt = indicators[i]['date']
@@ -58,7 +65,10 @@ def _add_indicators(results, source, ttl, direction, enrich_it=False):
             ind = Indicator.query.filter(Indicator.source == source, Indicator.data_type == data_type,
                                          Indicator.value == i).first()
             if ind:
-                ind.last_seen = dt
+                ind.last = dt
+                ind.direction = direction
+                ind.ttl = ttl
+                ind.details = desc
                 updated_indicators.append([ind.id, source, val])
             else:
                 try:

@@ -12,9 +12,10 @@ class Indicator(db.Model):
     direction = db.Column(db.String(64), nullable=False)
     ttl = db.Column(db.Integer, nullable=False)
     created = db.Column(db.DateTime, nullable=False)
+    last = db.Column(db.DateTime, nullable=False, onupdate=datetime.datetime.utcnow)
     details = db.Column(db.Text())
     source = db.Column(db.String(64), nullable=False)
-    __table_args__ = (db.UniqueConstraint("value", "data_type", "direction"), )
+    __table_args__ = (db.UniqueConstraint("value", "data_type", "source"), )
 
     def __init__(self, value, ttl, data_type, source, direction='both', details='{}'):
         if not (ttl in TTL_VALUES and data_type in DATA_TYPES and direction in DIRECTIONS and source in SOURCES):
@@ -29,9 +30,11 @@ class Indicator(db.Model):
         self.data_type = data_type
         self.details = details
         self.created = datetime.datetime.utcnow()
+        self.last = datetime.datetime.utcnow()
+
 
     def as_dict(self):
-        return '%s' % {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def __repr__(self):
         return '<Indicator %r: %r>' % (self.source, self.value)

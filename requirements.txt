@@ -7,7 +7,7 @@ Flask-WhooshAlchemy==0.56
 Flask-WTF==0.13
 freeze==1.0.10
 itsdangerous==0.24
-Jinja2==2.8
+Jinja2>=2.10
 MarkupSafe==0.23
 pbr==1.10.0
 requests==2.11.1
@@ -17,6 +17,6 @@ sqlalchemy-datatables==0.4.0
 sqlalchemy-migrate==0.10.0
 sqlparse==0.2.1
 Tempita==0.5.2
-Werkzeug==0.11.11
+werkzeug==0.14.1
 Whoosh==2.7.4
 WTForms==2.1
