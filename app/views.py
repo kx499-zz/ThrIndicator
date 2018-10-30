@@ -5,6 +5,7 @@ from config import TTL_VALUES, DATA_TYPES, DIRECTIONS, SOURCES, VALIDATE
 from .models import Indicator, db
 from .my_datatables import ColumnDT, DataTables
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func
 import re
 
 
@@ -87,14 +88,15 @@ def indicator_data():
     return jsonify(res)
 
 
-@app.route('/indicator/getlist/<data_type>')
-def indicator_getlist(data_type):
+@app.route('/indicator/getstats/<data_type>')
+def indicator_getstats(data_type):
     if not (data_type in DATA_TYPES):
         raise Exception("Bad Values")
 
-    query = db.session.query(Indicator).filter(Indicator.data_type == data_type)
+    query = db.session.query(Indicator.source, func.count().label('count')).filter(Indicator.data_type == data_type)\
+        .group_by(Indicator.source)
 
-    res = [item.as_dict() for item in query.all()]
+    res = [item._asdict() for item in query.all()]
     return jsonify(res)
 
 

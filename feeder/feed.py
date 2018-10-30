@@ -27,7 +27,7 @@ class Feed:
         except Exception, e:
             app.logger.warn('Error Loading File: %s' % e)
 
-    def process_all(self, config_to_process=None):
+    def process_all(self, config_to_process=None, force_run=False):
         results = {}
         fields = ['frequency', 'modules', 'ttl', 'direction']
         date_hour = datetime.datetime.now().hour
@@ -40,8 +40,11 @@ class Feed:
                     continue
             app.logger.info('Processing Feed: %s' % name)
             modules = config.get('modules')
-            freq = config.get('frequency').split(',')
-            if not ('*' in freq  or str(date_hour) in freq):
+            if force_run:
+                freq = '*'
+            else:
+                freq = config.get('frequency').split(',')
+            if not ('*' in freq or str(date_hour) in freq):
                 continue
 
             if 'parse' in modules.keys() and 'collect' in modules.keys():

@@ -10,7 +10,7 @@ logger = app.logger
 def run():
     logger.info("Start Feed pull")
     f = Feed()
-    results = f.process_all()
+    results = f.process_all(force_run=True)
     logger.info("pulled all feeds")
     logger.info("Task finished: total inserted %i" % len(results))
 
